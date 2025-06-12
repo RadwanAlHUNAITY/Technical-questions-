@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>اختبر معلوماتك التقنية - النسخة المطورة</title>
+<style>
+body { background: #f2f2f2; font-family: 'Arial'; direction: rtl; text-align: center; padding: 20px; }
+.container { background: #fff; padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; margin: auto; box-shadow: 0 0 15px rgba(0,0,0,0.3); }
+h1 { color: #333; margin-bottom: 20px; }
+.question { font-size: 22px; margin: 20px 0; }
+.options button { background: #3498db; color: white; border: none; padding: 15px 30px; margin: 10px; border-radius: 8px; font-size: 18px; cursor: pointer; transition: 0.3s; }
+.options button:hover { background: #2980b9; }
+.result { font-size: 24px; color: #27ae60; margin-top: 20px; }
+.timer { font-size: 20px; color: #e74c3c; margin-top: 10px; }
+.correct { background: #2ecc71 !important; }
+.wrong { background: #e74c3c !important; }
+#restartBtn { margin-top: 20px; padding: 10px 30px; font-size: 20px; border: none; border-radius: 8px; background: #27ae60; color: #fff; cursor: pointer; }
+#restartBtn:hover { background: #219150; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1> اختبار المعلومات التقنية  🎯</h1>
+<div id="quiz">
+  <div id="question" class="question"></div>
+  <div class="timer" id="timer"></div>
+  <div id="options" class="options"></div>
+</div>
+<div id="result" class="result"></div>
+<button id="restartBtn" onclick="startQuiz()" style="display:none;">إعادة الاختبار</button>
+</div>
+
+<script>
+const questions = [
+  {
+    question: "ما هو اسم روبوت الذكاء الاصطناعي الشهير من OpenAI؟",
+    options: ["Bard", "Siri", "ChatGPT", "Gemini"],
+    answer: "ChatGPT"
+  },
+  {
+    question: "أي شركة تطور نظام التشغيل أندرويد؟",
+    options: ["Apple", "Google", "Microsoft", "Samsung"],
+    answer: "Google"
+  },
+  {
+    question: "ما هي وظيفة تطبيق تروكولر؟",
+    options: ["معالجة الصور", "تعريف هوية المتصل", "البحث العلمي", "التواصل الاجتماعي"],
+    answer: "تعريف هوية المتصل"
+  },
+  {
+    question: "ما هو اختصار الذكاء الاصطناعي بالإنجليزية؟",
+    options: ["VR", "AI", "AR", "ML"],
+    answer: "AI"
+  },
+  {
+    question: "أي شركة طورت هاتف iPhone؟",
+    options: ["Huawei", "Apple", "Sony", "Samsung"],
+    answer: "Apple"
+  }
+];
+
+let currentQuestion = 0;
+let score = 0;
+let timer;
+let timeLeft = 20;
+
+function startQuiz() {
+  currentQuestion = 0;
+  score = 0;
+  document.getElementById("result").innerText = "";
+  document.getElementById("restartBtn").style.display = "none";
+  showQuestion();
+}
+
+function showQuestion() {
+  if (currentQuestion >= questions.length) {
+    endQuiz();
+    return;
+  }
+
+  const q = questions[currentQuestion];
+  document.getElementById("question").innerText = q.question;
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+  q.options.forEach(option => {
+    const btn = document.createElement("button");
+    btn.innerText = option;
+    btn.onclick = () => checkAnswer(btn, option);
+    optionsDiv.appendChild(btn);
+  });
+
+  // تشغيل المؤقت
+  timeLeft = 20;
+  document.getElementById("timer").innerText = `الوقت المتبقي: ${timeLeft} ثانية`;
+  clearInterval(timer);
+  timer = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+  timeLeft--;
+  document.getElementById("timer").innerText = `الوقت المتبقي: ${timeLeft} ثانية`;
+  if (timeLeft <= 0) {
+    clearInterval(timer);
+    markCorrectAnswer();
+    setTimeout(() => {
+      currentQuestion++;
+      showQuestion();
+    }, 2000);
+  }
+}
+
+function checkAnswer(button, selected) {
+  clearInterval(timer);
+  const correct = questions[currentQuestion].answer;
+  if (selected === correct) {
+    button.classList.add("correct");
+    score++;
+  } else {
+    button.classList.add("wrong");
+    markCorrectAnswer();
+  }
+
+  // الانتقال للسؤال التالي بعد ثانيتين
+  setTimeout(() => {
+    currentQuestion++;
+    showQuestion();
+  }, 2000);
+}
+
+function markCorrectAnswer() {
+  const buttons = document.querySelectorAll("#options button");
+  buttons.forEach(btn => {
+    if (btn.innerText === questions[currentQuestion].answer) {
+      btn.classList.add("correct");
+    }
+  });
+}
+
+function endQuiz() {
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("result").innerText = `🎉 انتهى الاختبار! نتيجتك: ${score} من ${questions.length}`;
+  document.getElementById("restartBtn").style.display = "block";
+  document.getElementById("timer").innerText = "";
+}
+
+startQuiz();
+</script>
+
+</body>
+</html>
